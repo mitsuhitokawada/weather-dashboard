@@ -234,6 +234,16 @@
       font-size:0.96rem; font-weight:800; color:var(--t1);
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
+    .f-name a {
+      color: var(--t1);
+      text-decoration: none;
+      border-bottom: 1.5px solid var(--border);
+      transition: color .15s, border-color .15s;
+    }
+    .f-name a:hover {
+      color: var(--sky);
+      border-bottom-color: var(--sky);
+    }
     .f-point {
       font-size:0.78rem; color:var(--t2); margin-top:4px;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:500;
@@ -348,14 +358,14 @@ const REFRESH_MS = 60 * 60 * 1000;
 
 const RESTAURANTS = {
   toyosu: [
-    { name:'寿司 大 豊洲店',       point:'🍣 旬の白身・牡蠣握り — 春季限定',    genre:'寿司',     price:'¥3,500〜', stars:4.8 },
-    { name:'豊洲 魚がし食堂',      point:'🐠 マグロ中落ち丼・寒ブリ炙り定食',   genre:'海鮮丼',   price:'¥1,200〜', stars:4.7 },
-    { name:'焼き鳥 豊洲一番',      point:'🍗 朝〆地鶏コース 2〜3月限定',        genre:'焼き鳥',   price:'¥2,500〜', stars:4.5 },
+    { name:'寿司 大 豊洲店',  point:'🍣 旬の白身・牡蠣握り — 春季限定',     genre:'寿司',   price:'¥3,500〜', stars:4.8, url:'https://tabelog.com/tokyo/A1313/A131301/rstLst/?vs=1&sa=豊洲&sk=寿司+大' },
+    { name:'豊洲 魚がし食堂', point:'🐠 マグロ中落ち丼・寒ブリ炙り定食',    genre:'海鮮丼', price:'¥1,200〜', stars:4.7, url:'https://tabelog.com/tokyo/A1313/A131301/rstLst/?vs=1&sa=豊洲&sk=魚がし食堂' },
+    { name:'焼き鳥 豊洲一番', point:'🍗 朝〆地鶏コース 2〜3月限定',         genre:'焼き鳥', price:'¥2,500〜', stars:4.5, url:'https://tabelog.com/tokyo/A1313/A131301/rstLst/?vs=1&sa=豊洲&sk=焼き鳥' },
   ],
   gifu: [
-    { name:'鮎料理 川原町 明神丸', point:'🐟 奥飛騨産 天然アマゴ塩焼き定食',    genre:'川魚料理', price:'¥2,000〜', stars:4.8 },
-    { name:'みそかつ 岐阜屋',      point:'🥩 飛騨牛みそかつ膳 — 冬の旨味凝縮', genre:'みそかつ', price:'¥1,600〜', stars:4.7 },
-    { name:'岐阜らーめん 丸デブ',  point:'🍜 醤油中華そば 老舗の冬限定あんかけ', genre:'ラーメン', price:'¥800〜',  stars:4.6 },
+    { name:'鮎料理 川原町 明神丸', point:'🐟 奥飛騨産 天然アマゴ塩焼き定食',     genre:'川魚料理', price:'¥2,000〜', stars:4.8, url:'https://tabelog.com/gifu/A2101/A210101/rstLst/?vs=1&sa=岐阜市&sk=鮎料理' },
+    { name:'みそかつ 岐阜屋',      point:'🥩 飛騨牛みそかつ膳 — 冬の旨味凝縮',  genre:'みそかつ', price:'¥1,600〜', stars:4.7, url:'https://tabelog.com/gifu/A2101/A210101/rstLst/?vs=1&sa=岐阜市&sk=みそかつ' },
+    { name:'岐阜らーめん 丸デブ',  point:'🍜 醤油中華そば 老舗の冬限定あんかけ', genre:'ラーメン', price:'¥800〜',  stars:4.6, url:'https://tabelog.com/gifu/A2101/A210101/rstLst/?vs=1&sa=岐阜市&sk=ラーメン' },
   ]
 };
 
@@ -466,7 +476,7 @@ function foodCardHTML(loc) {
     <div class="f-item">
       <div class="f-rank ${rCls(i)}">${i+1}</div>
       <div class="f-body">
-        <div class="f-name">${r.name}</div>
+        <div class="f-name"><a href="${r.url}" target="_blank" rel="noopener">${r.name}</a></div>
         <div class="f-point">${r.point}</div>
       </div>
       <div class="f-right">
