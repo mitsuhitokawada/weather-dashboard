@@ -71,10 +71,10 @@
       padding-left: 4px;
     }
 
-    /* ── 3カラムグリッド ── */
+    /* ── 2カラムグリッド ── */
     .grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 20px;
       margin-bottom: 20px;
     }
@@ -282,9 +282,6 @@
     .card:nth-child(3) { animation-delay:.14s; }
 
     /* ── レスポンシブ ── */
-    @media (max-width: 960px) {
-      .grid { grid-template-columns: 1fr 1fr; }
-    }
     @media (max-width: 640px) {
       .page { padding: 16px 14px 32px; }
       header { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 20px; }
@@ -312,7 +309,7 @@
       <div class="hdr-icon">🌤</div>
       <div>
         <h1>Weather &amp; Gourmet Dashboard</h1>
-        <p>築地 &amp; 日本橋 &amp; 大手町 — 天気予報 &amp; 今季おすすめグルメ</p>
+        <p>豊洲 &amp; 岐阜市 — 天気予報 &amp; 今季おすすめグルメ</p>
       </div>
     </div>
     <div class="hdr-right">
@@ -327,13 +324,11 @@
   <div class="grid" id="grid-wx">
     <div class="card"><div class="loading-wrap"><div class="spinner"></div>取得中...</div></div>
     <div class="card"><div class="loading-wrap"><div class="spinner"></div>取得中...</div></div>
-    <div class="card"><div class="loading-wrap"><div class="spinner"></div>取得中...</div></div>
   </div>
 
   <!-- グルメセクション -->
   <div class="section-label">🍽 今季おすすめグルメ TOP3（2〜3月）</div>
   <div class="grid" id="grid-food">
-    <div class="card"><div class="loading-wrap"><div class="spinner"></div></div></div>
     <div class="card"><div class="loading-wrap"><div class="spinner"></div></div></div>
     <div class="card"><div class="loading-wrap"><div class="spinner"></div></div></div>
   </div>
@@ -346,27 +341,21 @@
 
 <script>
 const LOCATIONS = [
-  { name:'築地',   sub:'東京都中央区',   icon:'🐟', lat:35.6654, lon:139.7707, foodKey:'tsukiji'   },
-  { name:'日本橋', sub:'東京都中央区',   icon:'🏯', lat:35.6833, lon:139.7741, foodKey:'nihonbashi' },
-  { name:'大手町', sub:'東京都千代田区', icon:'🏢', lat:35.6863, lon:139.7640, foodKey:'otemachi'  }
+  { name:'豊洲',   sub:'東京都江東区', icon:'🐡', lat:35.6453, lon:139.7957, foodKey:'toyosu' },
+  { name:'岐阜市', sub:'岐阜県岐阜市', icon:'🏯', lat:35.4232, lon:136.7608, foodKey:'gifu'   }
 ];
 const REFRESH_MS = 60 * 60 * 1000;
 
 const RESTAURANTS = {
-  tsukiji: [
-    { name:'すし大 築地本館',     point:'🍣 白魚・ホタルイカ握り — 春季限定', genre:'寿司',     price:'¥3,000〜', stars:4.8 },
-    { name:'うなぎ 橋本屋',       point:'🦎 脂のり最高の冬うなぎ 2月末まで', genre:'うなぎ',   price:'¥3,500〜', stars:4.7 },
-    { name:'築地市場食堂 岸田屋', point:'🐟 寒ブリ炙り丼・牡蠣土手鍋定食',  genre:'海鮮定食', price:'¥1,200〜', stars:4.6 },
+  toyosu: [
+    { name:'寿司 大 豊洲店',       point:'🍣 旬の白身・牡蠣握り — 春季限定',    genre:'寿司',     price:'¥3,500〜', stars:4.8 },
+    { name:'豊洲 魚がし食堂',      point:'🐠 マグロ中落ち丼・寒ブリ炙り定食',   genre:'海鮮丼',   price:'¥1,200〜', stars:4.7 },
+    { name:'焼き鳥 豊洲一番',      point:'🍗 朝〆地鶏コース 2〜3月限定',        genre:'焼き鳥',   price:'¥2,500〜', stars:4.5 },
   ],
-  nihonbashi: [
-    { name:'日本橋 玉ゐ',         point:'🐡 あなごの白焼き・箱めし — 冬限定', genre:'あなご',   price:'¥2,800〜', stars:4.8 },
-    { name:'室町 砂場',           point:'🍜 老舗の寒ざらし蕎麦 2〜3月のみ',   genre:'蕎麦',     price:'¥1,500〜', stars:4.7 },
-    { name:'レストラン桜 丸善店', point:'🌸 春の厳選食材コース 2月後半〜',    genre:'フレンチ', price:'¥4,000〜', stars:4.5 },
-  ],
-  otemachi: [
-    { name:'鉄板焼 大手町',   point:'🥩 黒毛和牛サーロイン 冬の特選',       genre:'鉄板焼',   price:'¥6,000〜', stars:4.8 },
-    { name:'篝 大手町店',     point:'🍜 鶏白湯SOBA 冬季限定トリュフ仕立て', genre:'ラーメン', price:'¥1,800〜', stars:4.7 },
-    { name:'魚久 大手町本店', point:'🐠 京粕漬 銀だら西京焼き定食',         genre:'和食',     price:'¥1,600〜', stars:4.6 },
+  gifu: [
+    { name:'鮎料理 川原町 明神丸', point:'🐟 奥飛騨産 天然アマゴ塩焼き定食',    genre:'川魚料理', price:'¥2,000〜', stars:4.8 },
+    { name:'みそかつ 岐阜屋',      point:'🥩 飛騨牛みそかつ膳 — 冬の旨味凝縮', genre:'みそかつ', price:'¥1,600〜', stars:4.7 },
+    { name:'岐阜らーめん 丸デブ',  point:'🍜 醤油中華そば 老舗の冬限定あんかけ', genre:'ラーメン', price:'¥800〜',  stars:4.6 },
   ]
 };
 
