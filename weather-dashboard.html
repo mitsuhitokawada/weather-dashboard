@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天気 & グルメ ダッシュボード</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #dce8f4;
+      --card:    #ffffff;
+      --border:  #c2d4e8;
+      --sky:     #0a72c3;
+      --sky-lt:  #d0e8fa;
+      --sky-md:  #b3d6f5;
+      --warm:    #c0390a;
+      --cold:    #0260a8;
+      --rain:    #1455b0;
+      --gold:    #b06600;
+      --t1:      #0d1c2e;
+      --t2:      #364e66;
+      --t3:      #7090ac;
+      --sh:      0 2px 16px rgba(10,60,130,0.10);
+      --sh-h:    0 6px 24px rgba(10,60,130,0.18);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter','Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+      background: var(--bg);
+      color: var(--t1);
+      overflow: hidden;
+    }
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 14px 20px 10px;
+      gap: 12px;
+    }
+
+    /* ── ヘッダー ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .hdr-left  { display:flex; align-items:center; gap:12px; }
+    .hdr-icon  {
+      width:40px; height:40px;
+      background: linear-gradient(135deg,#56b4f0,#0a72c3);
+      border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.35rem;
+      box-shadow: 0 3px 12px rgba(10,114,195,0.35);
+    }
+    .hdr-left h1 { font-size:1.1rem; font-weight:800; letter-spacing:-.02em; color:var(--t1); }
+    .hdr-left p  { font-size:0.68rem; color:var(--t3); margin-top:2px; }
+    .hdr-right   { display:flex; align-items:center; gap:16px; }
+    #last-updated{ font-size:0.72rem; color:var(--t2); font-weight:600; }
+    #next-update { font-size:0.65rem; color:var(--t3); }
+    .bar-wrap    { width:80px; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .bar-fill    { height:100%; background:linear-gradient(90deg,var(--sky),#00bcd4); transition:width 1s linear; }
+
+    /* ── 4カラムグリッド ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── カード基本 ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--sh);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .card:hover { box-shadow: var(--sh-h); transform: translateY(-2px); }
+
+    /* ── カードヘッダー帯 ── */
+    .card-head {
+      padding: 13px 18px 11px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .card-head.wx      { background: linear-gradient(135deg,#cce8fa 0%,#fff 60%); }
+    .card-head.gourmet { background: linear-gradient(135deg,#fff2d6 0%,#fff 60%); }
+
+    .ch-icon { font-size:1.4rem; }
+    .ch-name { font-size:0.95rem; font-weight:800; flex:1; letter-spacing:-.01em; }
+    .ch-sub  { font-size:0.63rem; color:var(--t3); }
+    .ch-tag  {
+      font-size:0.62rem; font-weight:700;
+      background:#fff2cc; color:var(--gold);
+      border:1px solid #f0d070; border-radius:999px; padding:3px 10px;
+    }
+
+    /* ══════════════════════════════════════
+       天気カード
+    ══════════════════════════════════════ */
+
+    /* 現在天気ブロック */
+    .wx-now {
+      display: flex;
+      align-items: center;
+      padding: 20px 20px 16px;
+      gap: 16px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(160deg, #f5fbff 0%, #fff 100%);
+    }
+    .wx-left   { display:flex; flex-direction:column; align-items:center; gap:4px; flex-shrink:0; }
+    .wx-emoji  { font-size: 4.2rem; line-height:1; filter: drop-shadow(0 2px 6px rgba(0,0,0,.12)); }
+    .wx-desc   { font-size:0.78rem; font-weight:700; color:var(--t2); text-align:center; }
+
+    .wx-center { flex:1; display:flex; flex-direction:column; gap:6px; }
+    .wx-temp-row { display:flex; align-items:baseline; gap:4px; }
+    .wx-temp {
+      font-size: 3.8rem;
+      font-weight: 900;
+      color: var(--sky);
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+    .wx-unit { font-size:1.6rem; font-weight:400; color:var(--t3); }
+
+    .wx-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px 10px;
+    }
+    .wm {
+      font-size: 0.72rem;
+      color: var(--t3);
+      font-weight: 500;
+    }
+    .wm strong { color:var(--t2); font-weight:700; }
+
+    /* 3日間予報 */
+    .wx-3days {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .day-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 10px;
+      border-right: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+    }
+    .day-col:last-child { border-right: none; }
+    .day-col.today {
+      background: linear-gradient(180deg, var(--sky-lt) 0%, #eaf4fd 100%);
+    }
+    .today-badge {
+      position: absolute;
+      top: 7px; left: 50%; transform: translateX(-50%);
+      font-size: 0.52rem; font-weight:800;
+      background: var(--sky); color:#fff;
+      border-radius:999px; padding:1px 8px;
+      letter-spacing:.04em;
+    }
+
+    .dc-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--t3);
+      margin-top: 10px;
+    }
+    .day-col.today .dc-label { color: var(--sky); }
+
+    .dc-emoji { font-size: 2.4rem; line-height:1; filter: drop-shadow(0 1px 4px rgba(0,0,0,.10)); }
+    .dc-wx    { font-size: 0.7rem; color: var(--t2); font-weight:600; }
+
+    .dc-temps {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .dc-hi {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--warm);
+      letter-spacing: -0.03em;
+    }
+    .dc-lo {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--cold);
+      letter-spacing: -0.02em;
+    }
+
+    .dc-rain-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dc-rain-pct {
+      font-size: 0.72rem;
+      color: var(--rain);
+      font-weight: 700;
+    }
+    .dc-rain-track {
+      width: 50px; height: 5px;
+      background: var(--border); border-radius:3px; overflow:hidden;
+    }
+    .dc-rain-bar {
+      height:100%;
+      background: linear-gradient(90deg, #64b5f6, #0a72c3);
+      border-radius:3px;
+    }
+
+    /* ══════════════════════════════════════
+       グルメカード
+    ══════════════════════════════════════ */
+    .food-list {
+      flex:1; min-height:0;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 16px 14px;
+      gap: 8px;
+    }
+
+    .f-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1.5px solid transparent;
+      background: #fafcff;
+      transition: background .15s, border-color .15s, transform .15s;
+      flex: 1;
+    }
+    .f-item:hover { background:#fff7ed; border-color:#fddcb0; transform:translateX(3px); }
+
+    .f-rank {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 900; flex-shrink: 0;
+    }
+    .r1 { background: linear-gradient(135deg,#fff3c2,#ffe066); color:#8a5c00; border:2px solid #f5c400; box-shadow:0 2px 8px rgba(200,160,0,.25); }
+    .r2 { background: linear-gradient(135deg,#eef1f5,#d8e0ea); color:#3d5068; border:2px solid #aab8ca; box-shadow:0 2px 6px rgba(80,100,130,.15); }
+    .r3 { background: linear-gradient(135deg,#fde8d8,#f5c9a8); color:#7c3d00; border:2px solid #d4884a; box-shadow:0 2px 6px rgba(180,100,30,.18); }
+
+    .f-body { flex:1; min-width:0; }
+    .f-name {
+      font-size:0.92rem; font-weight:800; color:var(--t1);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      letter-spacing:-.01em;
+    }
+    .f-point {
+      font-size:0.75rem; color:var(--t2); margin-top:4px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      font-weight:500;
+    }
+
+    .f-right {
+      display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0;
+    }
+    .f-genre {
+      font-size:0.65rem; font-weight:700;
+      background:var(--sky-lt); color:var(--sky);
+      border-radius:999px; padding:3px 10px; white-space:nowrap;
+    }
+    .f-score { font-size:0.78rem; color:#e6a800; font-weight:800; }
+    .f-price { font-size:0.65rem; color:var(--t3); font-weight:600; }
+
+    /* ── ロード ── */
+    .loading-wrap {
+      flex:1; display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:12px; color:var(--t3); font-size:0.8rem;
+    }
+    .spinner {
+      width:28px; height:28px;
+      border:3px solid var(--border);
+      border-top-color:var(--sky);
+      border-radius:50%;
+      animation:spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── フッター ── */
+    footer {
+      text-align:center; font-size:0.62rem; color:var(--t3);
+      flex-shrink:0; padding-bottom:2px;
+    }
+    footer a { color:var(--sky); text-decoration:none; }
+
+    /* ── フェードイン ── */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(12px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .card { animation:fadeUp .4s ease both; }
+    .card:nth-child(1) { animation-delay:.00s; }
+    .card:nth-child(2) { animation-delay:.07s; }
+    .card:nth-child(3) { animation-delay:.14s; }
+    .card:nth-child(4) { animation-delay:.21s; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="hdr-left">
+      <div class="hdr-icon">🌤</div>
+      <div>
+        <h1>Weather &amp; Gourmet Dashboard</h1>
+        <p>築地 &amp; 浦和 — 天気予報 &amp; 今季おすすめグルメ</p>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div id="last-updated">読み込み中...</div>
+      <div id="next-update"></div>
+      <div class="bar-wrap"><div class="bar-fill" id="bar-fill" style="width:100%"></div></div>
+    </div>
+  </header>
+
+  <div class="grid" id="grid">
+    <div class="card"><div class="loading-wrap"><div class="spinner"></div>取得中...</div></div>
+    <div class="card"><div class="loading-wrap"><div class="spinner"></div>取得中...</div></div>
+    <div class="card"><div class="loading-wrap"><div class="spinner"></div></div></div>
+    <div class="card"><div class="loading-wrap"><div class="spinner"></div></div></div>
+  </div>
+
+  <footer>
+    天気データ: <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a>
+    &nbsp;|&nbsp; グルメ: 2〜3月おすすめ TOP3 &nbsp;|&nbsp; 1時間ごと自動更新
+  </footer>
+</div>
+
+<script>
+const LOCATIONS = [
+  { name:'築地', sub:'東京都中央区',    icon:'🐟', lat:35.6654, lon:139.7707, foodKey:'tsukiji' },
+  { name:'浦和', sub:'埼玉県さいたま市', icon:'⛩',  lat:35.8617, lon:139.6455, foodKey:'urawa'   }
+];
+const REFRESH_MS = 60 * 60 * 1000;
+
+// ── グルメ TOP3 ─────────────────────────────────────
+const RESTAURANTS = {
+  tsukiji: [
+    { name:'すし大 築地本館',       point:'🍣 白魚・ホタルイカ握り — 春季限定',  genre:'寿司',     price:'¥3,000〜', stars:4.8 },
+    { name:'うなぎ 橋本屋',         point:'🦎 脂のり最高の冬うなぎ 2月末まで',  genre:'うなぎ',   price:'¥3,500〜', stars:4.7 },
+    { name:'築地市場食堂 岸田屋',   point:'🐟 寒ブリ炙り丼・牡蠣土手鍋定食',   genre:'海鮮定食', price:'¥1,200〜', stars:4.6 },
+  ],
+  urawa: [
+    { name:'割烹 浦和 あかね',           point:'🎣 利根川産 寒ワカサギ天ぷら定食',  genre:'割烹',     price:'¥2,500〜', stars:4.7 },
+    { name:'Restaurant Akagi',           point:'🌸 春野菜フレンチフルコース 2月〜', genre:'仏料理',   price:'¥3,500〜', stars:4.6 },
+    { name:'さいたま旬菜 浦和本店',     point:'🥬 寒締め野菜の旬鍋定食',          genre:'和食・鍋', price:'¥1,400〜', stars:4.5 },
+  ]
+};
+
+// ── 天気コード → 絵文字＋説明 ────────────────────────
+function wInfo(code, isDay=true) {
+  const m = {
+    0:  [isDay?'☀️':'🌙', '快晴'],
+    1:  [isDay?'🌤':'🌙', 'ほぼ晴れ'],
+    2:  ['⛅', '晴れ時々曇り'],
+    3:  ['☁️', '曇り'],
+    45: ['🌫', '霧'],
+    48: ['🌫', '霧氷'],
+    51: ['🌦', '霧雨（弱）'],  53: ['🌦', '霧雨'],     55: ['🌧', '霧雨（強）'],
+    61: ['🌧', '雨（弱）'],    63: ['🌧', '雨'],       65: ['🌧', '大雨'],
+    71: ['🌨', '小雪'],        73: ['❄️', '雪'],       75: ['❄️', '大雪'],
+    77: ['🌨', '霧雪'],
+    80: ['🌦', 'にわか雨'],    81: ['🌦', 'にわか雨'], 82: ['⛈', 'にわか雨（強）'],
+    85: ['🌨', 'にわか雪'],   86: ['🌨', 'にわか大雪'],
+    95: ['⛈', '雷雨'],        96: ['⛈', '雷雨+ひょう'], 99: ['⛈', '激しい雷雨']
+  };
+  const r = m[code];
+  return r ? { emoji:r[0], desc:r[1] } : { emoji:'❓', desc:'不明' };
+}
+
+function windDir(deg) {
+  return ['北','北北東','北東','東北東','東','東南東','南東','南南東',
+          '南','南南西','南西','西南西','西','西北西','北西','北北西'][Math.round(deg/22.5)%16];
+}
+
+// ── API 取得 ───────────────────────────────────────
+async function fetchWeather(loc) {
+  const u = new URL('https://api.open-meteo.com/v1/forecast');
+  u.searchParams.set('latitude',  loc.lat);
+  u.searchParams.set('longitude', loc.lon);
+  u.searchParams.set('current', [
+    'temperature_2m','relative_humidity_2m','apparent_temperature',
+    'weather_code','wind_speed_10m','wind_direction_10m','precipitation','is_day'
+  ].join(','));
+  u.searchParams.set('daily', [
+    'weather_code','temperature_2m_max','temperature_2m_min','precipitation_probability_max'
+  ].join(','));
+  u.searchParams.set('timezone', 'Asia/Tokyo');
+  u.searchParams.set('forecast_days', '3');
+  const res = await fetch(u.toString());
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+// ── 天気カード HTML ────────────────────────────────
+function wxCardHTML(loc, data) {
+  const c   = data.current;
+  const day = c.is_day === 1;
+  const cw  = wInfo(c.weather_code, day);
+  const DN  = ['日','月','火','水','木','金','土'];
+
+  const days3 = data.daily.time.slice(0,3).map((t, i) => {
+    const d    = new Date(t);
+    const dw   = wInfo(data.daily.weather_code[i]);
+    const rain = data.daily.precipitation_probability_max[i] ?? 0;
+    const hi   = Math.round(data.daily.temperature_2m_max[i]);
+    const lo   = Math.round(data.daily.temperature_2m_min[i]);
+    const lbl  = i===0 ? '今日' : i===1 ? '明日' : `${d.getMonth()+1}/${d.getDate()}（${DN[d.getDay()]}）`;
+    const todayClass = i===0 ? ' today' : '';
+    const badge = i===0 ? '<div class="today-badge">TODAY</div>' : '';
+    return `
+      <div class="day-col${todayClass}">
+        ${badge}
+        <div class="dc-label">${lbl}</div>
+        <div class="dc-emoji">${dw.emoji}</div>
+        <div class="dc-wx">${dw.desc}</div>
+        <div class="dc-temps">
+          <span class="dc-hi">${hi}°</span>
+          <span class="dc-lo">${lo}°</span>
+        </div>
+        <div class="dc-rain-row">
+          <span class="dc-rain-pct">💧${rain}%</span>
+          <div class="dc-rain-track">
+            <div class="dc-rain-bar" style="width:${rain}%"></div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="card-head wx">
+      <span class="ch-icon">${loc.icon}</span>
+      <span class="ch-name">${loc.name}</span>
+      <span class="ch-sub">${loc.sub}</span>
+    </div>
+    <div class="wx-now">
+      <div class="wx-left">
+        <div class="wx-emoji">${cw.emoji}</div>
+        <div class="wx-desc">${cw.desc}</div>
+      </div>
+      <div class="wx-center">
+        <div class="wx-temp-row">
+          <span class="wx-temp">${Math.round(c.temperature_2m)}</span>
+          <span class="wx-unit">°C</span>
+        </div>
+        <div class="wx-meta">
+          <span class="wm">🌡 体感 <strong>${Math.round(c.apparent_temperature)}°C</strong></span>
+          <span class="wm">💧 湿度 <strong>${c.relative_humidity_2m}%</strong></span>
+          <span class="wm">💨 風速 <strong>${c.wind_speed_10m} km/h</strong></span>
+          <span class="wm">🧭 風向 <strong>${windDir(c.wind_direction_10m)}</strong></span>
+        </div>
+      </div>
+    </div>
+    <div class="wx-3days">${days3}</div>`;
+}
+
+// ── グルメカード HTML ──────────────────────────────
+function foodCardHTML(loc) {
+  const rCls = i => ['r1','r2','r3'][i] ?? 'r3';
+  const list = RESTAURANTS[loc.foodKey];
+  const items = list.map((r, i) => `
+    <div class="f-item">
+      <div class="f-rank ${rCls(i)}">${i+1}</div>
+      <div class="f-body">
+        <div class="f-name">${r.name}</div>
+        <div class="f-point">${r.point}</div>
+      </div>
+      <div class="f-right">
+        <span class="f-genre">${r.genre}</span>
+        <span class="f-score">★ ${r.stars}</span>
+        <span class="f-price">${r.price}</span>
+      </div>
+    </div>`).join('');
+
+  return `
+    <div class="card-head gourmet">
+      <span class="ch-icon">${loc.icon}</span>
+      <span class="ch-name">${loc.name} — 今季おすすめ</span>
+      <span class="ch-tag">🌸 2〜3月 TOP3</span>
+    </div>
+    <div class="food-list">${items}</div>`;
+}
+
+// ── 描画・更新 ──────────────────────────────────────
+let countdownTimer = null, nextRefreshAt = null;
+
+async function render() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = Array(4).fill(
+    `<div class="card"><div class="loading-wrap"><div class="spinner"></div>取得中...</div></div>`
+  ).join('');
+  document.getElementById('last-updated').textContent = '更新中...';
+  document.getElementById('next-update').textContent  = '';
+
+  try {
+    const results = await Promise.all(LOCATIONS.map(fetchWeather));
+    grid.innerHTML = '';
+
+    // 天気カード × 2
+    results.forEach((data, i) => {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML = wxCardHTML(LOCATIONS[i], data);
+      grid.appendChild(el);
+    });
+
+    // グルメカード × 2
+    LOCATIONS.forEach(loc => {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML = foodCardHTML(loc);
+      grid.appendChild(el);
+    });
+
+    document.getElementById('last-updated').textContent =
+      `最終更新 ${new Date().toLocaleTimeString('ja-JP')}`;
+    nextRefreshAt = Date.now() + REFRESH_MS;
+    startCountdown();
+
+  } catch(err) {
+    grid.innerHTML = `<div class="card" style="grid-column:span 4">
+      <div class="loading-wrap" style="color:#c0392b">⚠️ データ取得失敗: ${err.message}</div>
+    </div>`;
+    document.getElementById('last-updated').textContent = '取得失敗';
+    console.error(err);
+  }
+}
+
+function startCountdown() {
+  if (countdownTimer) clearInterval(countdownTimer);
+  const fill  = document.getElementById('bar-fill');
+  const label = document.getElementById('next-update');
+  countdownTimer = setInterval(() => {
+    const rem = nextRefreshAt - Date.now();
+    if (rem <= 0) { clearInterval(countdownTimer); return; }
+    fill.style.width = (rem / REFRESH_MS * 100) + '%';
+    const m = Math.floor(rem / 60000);
+    const s = Math.floor((rem % 60000) / 1000);
+    label.textContent = `次回更新まで ${m}分${String(s).padStart(2,'0')}秒`;
+  }, 1000);
+}
+
+setInterval(render, REFRESH_MS);
+render();
+</script>
+</body>
+</html>
