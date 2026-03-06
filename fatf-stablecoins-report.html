@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FATF レポート要約｜ステーブルコインとアンホステッドウォレットに関する集中報告</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Hiragino Sans', 'Meiryo', 'Yu Gothic', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      line-height: 1.7;
+    }
+
+    /* ── HERO ───────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #1a2332 0%, #0d1117 60%, #1a1f2e 100%);
+      border-bottom: 1px solid #30363d;
+      padding: 60px 24px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(88,166,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(88,166,255,0.15);
+      border: 1px solid rgba(88,166,255,0.4);
+      color: #58a6ff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(22px, 4vw, 36px);
+      font-weight: 800;
+      color: #f0f6fc;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+    .hero-sub {
+      color: #8b949e;
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #8b949e;
+    }
+    .meta-item .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #58a6ff;
+      flex-shrink: 0;
+    }
+
+    /* ── LAYOUT ──────────────────────────────────────── */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── KPI CARDS ───────────────────────────────────── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .kpi-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 24px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .kpi-card:hover { border-color: #58a6ff; transform: translateY(-2px); }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .kpi-card.blue::before  { background: linear-gradient(90deg, #58a6ff, #1f6feb); }
+    .kpi-card.orange::before { background: linear-gradient(90deg, #f78166, #da3633); }
+    .kpi-card.green::before  { background: linear-gradient(90deg, #3fb950, #238636); }
+    .kpi-card.purple::before { background: linear-gradient(90deg, #bc8cff, #8957e5); }
+    .kpi-card.yellow::before { background: linear-gradient(90deg, #e3b341, #bb8009); }
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #f0f6fc;
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
+    }
+    .kpi-label {
+      font-size: 12px;
+      color: #8b949e;
+      line-height: 1.4;
+    }
+    .kpi-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    /* ── SECTION ─────────────────────────────────────── */
+    .section {
+      margin-bottom: 48px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #21262d;
+    }
+    .section-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .icon-blue   { background: rgba(88,166,255,0.15); }
+    .icon-orange { background: rgba(247,129,102,0.15); }
+    .icon-green  { background: rgba(63,185,80,0.15); }
+    .icon-purple { background: rgba(188,140,255,0.15); }
+    .icon-red    { background: rgba(218,54,51,0.15); }
+    .icon-yellow { background: rgba(227,179,65,0.15); }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f0f6fc;
+    }
+
+    /* ── CARD ────────────────────────────────────────── */
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: #444c56; }
+    .card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #58a6ff;
+      margin-bottom: 10px;
+    }
+    .card p {
+      font-size: 14px;
+      color: #c9d1d9;
+      line-height: 1.7;
+    }
+
+    /* ── TWO-COLUMN CARDS ─────────────────────────────── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── RISK TABLE ─────────────────────────────────────── */
+    .risk-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .risk-table th {
+      background: #21262d;
+      color: #8b949e;
+      font-weight: 600;
+      text-align: left;
+      padding: 10px 14px;
+      border: 1px solid #30363d;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .risk-table td {
+      padding: 12px 14px;
+      border: 1px solid #21262d;
+      color: #c9d1d9;
+      vertical-align: top;
+    }
+    .risk-table tr:nth-child(even) td { background: #0d1117; }
+    .risk-table tr:hover td { background: #1c2128; }
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-red    { background: rgba(218,54,51,0.2);   color: #f85149; border: 1px solid rgba(218,54,51,0.4); }
+    .badge-orange { background: rgba(247,129,102,0.2); color: #f78166; border: 1px solid rgba(247,129,102,0.4); }
+    .badge-yellow { background: rgba(227,179,65,0.2);  color: #e3b341; border: 1px solid rgba(227,179,65,0.4); }
+    .badge-blue   { background: rgba(88,166,255,0.2);  color: #58a6ff; border: 1px solid rgba(88,166,255,0.4); }
+
+    /* ── STEPS ───────────────────────────────────────── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1f6feb, #388bfd);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .step-body { flex: 1; }
+    .step-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f0f6fc;
+      margin-bottom: 4px;
+    }
+    .step-desc {
+      font-size: 13px;
+      color: #8b949e;
+      line-height: 1.6;
+    }
+
+    /* ── ALERT BOX ───────────────────────────────────── */
+    .alert {
+      border-radius: 10px;
+      padding: 20px 24px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .alert-warning {
+      background: rgba(187,128,9,0.12);
+      border: 1px solid rgba(187,128,9,0.4);
+    }
+    .alert-danger {
+      background: rgba(218,54,51,0.1);
+      border: 1px solid rgba(218,54,51,0.35);
+    }
+    .alert-info {
+      background: rgba(31,111,235,0.1);
+      border: 1px solid rgba(31,111,235,0.35);
+    }
+    .alert-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+    .alert-body { flex: 1; }
+    .alert-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .alert-warning .alert-title { color: #e3b341; }
+    .alert-danger  .alert-title { color: #f85149; }
+    .alert-info    .alert-title { color: #58a6ff; }
+    .alert-text {
+      font-size: 13px;
+      color: #c9d1d9;
+      line-height: 1.6;
+    }
+
+    /* ── PROGRESS BAR ────────────────────────────────── */
+    .progress-wrap { margin-bottom: 16px; }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .progress-name { font-size: 13px; color: #c9d1d9; }
+    .progress-pct  { font-size: 13px; font-weight: 700; }
+    .progress-bar-bg {
+      height: 8px;
+      background: #21262d;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+
+    /* ── FOOTER ──────────────────────────────────────── */
+    .footer {
+      border-top: 1px solid #21262d;
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #484f58;
+    }
+    .footer a { color: #58a6ff; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* ── QUOTE ───────────────────────────────────────── */
+    .blockquote {
+      border-left: 4px solid #58a6ff;
+      padding: 16px 20px;
+      background: rgba(88,166,255,0.07);
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 14px;
+      color: #c9d1d9;
+      font-style: italic;
+    }
+
+    /* ── COUNTRY TAG ─────────────────────────────────── */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .tag {
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: #8b949e;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-badge">FATF 公式レポート要約</div>
+  <h1>ステーブルコインとアンホステッドウォレットに関する<br>集中報告書</h1>
+  <div class="hero-sub">Targeted Report on Stablecoins and Unhosted Wallets — FATF, 2025年</div>
+  <div class="hero-meta">
+    <div class="meta-item"><span class="dot"></span>発行: FATF（金融活動作業部会）</div>
+    <div class="meta-item"><span class="dot"></span>対象: 50以上の加盟国・地域</div>
+    <div class="meta-item"><span class="dot"></span>全42ページ</div>
+    <div class="meta-item"><span class="dot"></span>原文: 英語</div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="container">
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-icon">💱</div>
+      <div class="kpi-value">300億USD超</div>
+      <div class="kpi-label">ステーブルコイン<br>時価総額（2025年中旬）</div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-icon">⚠️</div>
+      <div class="kpi-value">84%</div>
+      <div class="kpi-label">不正VA取引に占める<br>ステーブルコインの割合（Chainalysis）</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-icon">🚫</div>
+      <div class="kpi-value">1,410億USD</div>
+      <div class="kpi-label">2025年に不正アクターが<br>受領したステーブルコイン額（TRM Labs）</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-icon">📊</div>
+      <div class="kpi-value">250種超</div>
+      <div class="kpi-label">流通中の<br>ステーブルコイン数</div>
+    </div>
+    <div class="kpi-card yellow">
+      <div class="kpi-icon">💸</div>
+      <div class="kpi-value">1,560億USD</div>
+      <div class="kpi-label">ステーブルコイン<br>一日取引高（BTCを超過）</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: 背景 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-blue">📋</div>
+      <div class="section-title">レポートの背景・目的</div>
+    </div>
+    <div class="card">
+      <p>
+        FATFは、ステーブルコインとアンホステッドウォレット（非保管型ウォレット）が不正金融に与えるリスクを包括的に評価するため、FATFグローバルネットワークの<strong>50以上の加盟国・機関から提出</strong>を受け、本報告書を作成しました。フランス・カナダ・インド・シンガポールなどの国別事例も収録されています。
+      </p>
+    </div>
+    <div class="alert alert-info">
+      <div class="alert-icon">ℹ️</div>
+      <div class="alert-body">
+        <div class="alert-title">FATFとは</div>
+        <div class="alert-text">FATF（金融活動作業部会）は、マネーロンダリング（資金洗浄）、テロ資金供与、大量破壊兵器の拡散資金供与に関する国際基準を策定する政府間機関。現在37の加盟国・機関、及び地域FSRBで構成されています。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: 市場の急成長 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-green">📈</div>
+      <div class="section-title">ステーブルコイン市場の急成長</div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <h3>取引量の爆発的拡大</h3>
+        <p>2024年5月〜2025年5月の1年間でステーブルコインの取引量は<strong>30兆USD超</strong>成長。月次で<strong>1兆USD</strong>を複数回突破。一日取引量は既にビットコインを超えている。</p>
+      </div>
+      <div class="card">
+        <h3>市場の多様化</h3>
+        <p>2025年中旬時点で<strong>250種以上</strong>のステーブルコインが流通。法定通貨連動型（USDTなど）が主流だが、コモディティ連動型や分散型（アルゴリズム型）も増加中。</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>合法的利用の広がり</h3>
+      <p>ステーブルコインは<strong>価格安定性・高流動性・相互運用性</strong>により、国際送金、決済、DeFi（分散型金融）プロトコルにおける正規用途でも急速に普及。一方でこれらの特性が犯罪者にとっても魅力的となっています。</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3: 不正利用リスク -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-orange">🚨</div>
+      <div class="section-title">不正金融リスク — 主要な脅威</div>
+    </div>
+
+    <div class="alert alert-danger">
+      <div class="alert-icon">🔴</div>
+      <div class="alert-body">
+        <div class="alert-title">FATFの主要発見</div>
+        <div class="alert-text">「ステーブルコインは不正取引に最も多く使われている仮想資産」とFATFは断言。Chainalysis調査では不正仮想資産取引の<strong>84%</strong>がステーブルコイン経由と指摘。</div>
+      </div>
+    </div>
+
+    <table class="risk-table" style="border-radius:10px; overflow:hidden; margin-bottom:16px;">
+      <thead>
+        <tr>
+          <th>脅威アクター</th>
+          <th>利用手口</th>
+          <th>リスクレベル</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>北朝鮮（DPRK）サイバー犯罪グループ</strong></td>
+          <td>ランサムウェア・フィッシング・ハッキングの収益をステーブルコインで洗浄。複雑な難読化手法を駆使。</td>
+          <td><span class="badge badge-red">最高リスク</span></td>
+        </tr>
+        <tr>
+          <td><strong>イラン（IRGC関連アクター）</strong></td>
+          <td>制裁回避のためステーブルコインを活用。ドローン部品等の調達資金を制裁対象グループへ送金。</td>
+          <td><span class="badge badge-red">最高リスク</span></td>
+        </tr>
+        <tr>
+          <td><strong>マネーロンダリング組織</strong></td>
+          <td>アンホステッドウォレット間のP2P送金で監視を回避。フィアット変換なしに決済が可能。</td>
+          <td><span class="badge badge-orange">高リスク</span></td>
+        </tr>
+        <tr>
+          <td><strong>テロ資金供与組織</strong></td>
+          <td>少額・高頻度送金でAML検出閾値をすり抜け。クロスチェーン取引で追跡困難。</td>
+          <td><span class="badge badge-orange">高リスク</span></td>
+        </tr>
+        <tr>
+          <td><strong>制裁対象企業・個人</strong></td>
+          <td>USDT等を用いてSWIFTなど従来の制裁フィルタリングを回避した国際送金を実施。</td>
+          <td><span class="badge badge-yellow">中〜高リスク</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="blockquote">
+      制裁関連の不法クリプト取引はステーブルコイン全体の<strong>86%</strong>を占め、北朝鮮・イランが主要な行為者とされる（TRM Labs, 2025）。
+    </div>
+  </div>
+
+  <!-- SECTION 4: アンホステッドウォレット -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-red">🔓</div>
+      <div class="section-title">アンホステッドウォレット — 「主要な脆弱性」</div>
+    </div>
+
+    <div class="alert alert-warning">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-body">
+        <div class="alert-title">FATFの位置づけ</div>
+        <div class="alert-text">FATFはP2P送金を通じたアンホステッドウォレットの使用をステーブルコインエコシステムにおける「<strong>主要な脆弱性（Key Vulnerability）</strong>」と明確に指定。</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>アンホステッドウォレットとは</h3>
+        <p>秘密鍵をユーザー自身が管理するウォレット（ハードウェアウォレット、ソフトウェアウォレット等）。取引所等の規制対象仲介者を介さず、個人間で直接送金が可能。</p>
+      </div>
+      <div class="card">
+        <h3>なぜリスクが高いのか</h3>
+        <p>規制対象VASPやFIを経由しないため、AML/CFT義務が適用外。フィアット変換なしに物品・サービスの支払いに使えるため、当局による監視・執行が困難。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>P2P取引の特徴的な問題点</h3>
+      <p>
+        アンホステッドウォレット間のP2P取引は、<strong>トラベルルール（資金移転ルール）の適用外</strong>となるケースが多く、送金者・受取人に関する情報が監督当局に提供されない。加えてクロスチェーン取引（ブリッジ）や混合サービス（ミキシング）との組み合わせにより、資金の出所追跡が著しく困難になる。
+      </p>
+    </div>
+  </div>
+
+  <!-- SECTION 5: 規制の現状 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-yellow">⚖️</div>
+      <div class="section-title">規制の現状と課題</div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <h3>勧告15（R.15）への準拠状況</h3>
+      <p style="margin-bottom:16px;">FATFの仮想資産に関する基準（勧告15）への各国準拠度は依然として低水準。</p>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-name">不準拠（NC）＋大部分不準拠（MNC）</span>
+          <span class="progress-pct" style="color:#f85149;">2024年: 25%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width:25%; background:linear-gradient(90deg,#da3633,#f85149);"></div>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-name">不準拠（NC）＋大部分不準拠（MNC）</span>
+          <span class="progress-pct" style="color:#e3b341;">2025年: 21%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width:21%; background:linear-gradient(90deg,#bb8009,#e3b341);"></div>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-name">完全準拠（C）</span>
+          <span class="progress-pct" style="color:#3fb950;">2025年: 1カ国のみ</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width:2%; background:linear-gradient(90deg,#238636,#3fb950);"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>ステーブルコイン固有の規制整備が不十分</h3>
+      <p>ステーブルコイン特有の性質（凍結・無効化・リスト管理機能）を明示的に考慮した規制枠組みを整備している国は限定的。多くの国でステーブルコインを他の仮想資産と同一の規制枠組みで扱っており、固有リスクへの対応が遅れている。</p>
+    </div>
+  </div>
+
+  <!-- SECTION 6: 推奨対策 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-green">✅</div>
+      <div class="section-title">FATFが推奨するリスク低減措置</div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">スマートコントラクト制御の義務化</div>
+          <div class="step-desc">
+            ステーブルコイン発行者に対し、リスクベースの技術的・ガバナンス的コントロールの実装を義務付ける。具体的には：<br>
+            • <strong>フリーズ機能</strong>（不正ウォレットの取引停止）<br>
+            • <strong>バーン機能</strong>（問題のあるステーブルコインの無効化）<br>
+            • <strong>アローリスト</strong>（事前承認アドレスのみ取引許可）<br>
+            • <strong>デナイリスト</strong>（高リスクアドレスのブロック）<br>
+            • 換金時の顧客確認（CDD）実施
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">監督当局の技術的能力強化</div>
+          <div class="step-desc">監督・法執行当局はスマートコントラクトの機能、クロスチェーン取引の仕組み、ブロックチェーン分析ツールの活用、アンホステッドウォレット経由のP2P取引監視に関する高度な専門知識を習得すべき。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">国際的な協力体制の強化</div>
+          <div class="step-desc">当局間で迅速な情報交換・凍結・バーンを可能にするための法的枠組みと確立されたチャネル（MoU等）を整備。クロスボーダーな不正取引への対応力を高める。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">トラベルルールの厳格適用</div>
+          <div class="step-desc">仮想資産移転における送受金者情報の共有義務（トラベルルール）をより広範に適用。ブロックチェーン分析ツールを活用し、アンホステッドウォレット経由の取引にも監視を拡大。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">勧告15（R.15）の完全実施</div>
+          <div class="step-desc">ステーブルコイン発行者、仲介VASP、金融機関、その他ステーブルコイン取引参加者に対して、明確なAML/CFT義務が適用されるよう各国がR.15を完全に実施すること。未実施の場合、FATFグレーリスト掲載の可能性も示唆。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: 国別ケーススタディ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-purple">🌍</div>
+      <div class="section-title">レポートで取り上げられた国・地域</div>
+    </div>
+    <div class="card">
+      <p>本報告書は以下の国・地域における規制・執行事例を収録しています。</p>
+      <div class="tag-list">
+        <span class="tag">🇫🇷 フランス</span>
+        <span class="tag">🇨🇦 カナダ</span>
+        <span class="tag">🇮🇳 インド</span>
+        <span class="tag">🇸🇬 シンガポール</span>
+        <span class="tag">🇺🇸 米国（OFAC）</span>
+        <span class="tag">🇰🇵 北朝鮮（脅威主体）</span>
+        <span class="tag">🇮🇷 イラン（脅威主体）</span>
+        <span class="tag">及びFATFグローバルネットワーク加盟50カ国以上</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: 総括 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-orange">🎯</div>
+      <div class="section-title">総括 — FATFのメッセージ</div>
+    </div>
+
+    <div class="alert alert-danger">
+      <div class="alert-icon">🔴</div>
+      <div class="alert-body">
+        <div class="alert-title">大規模普及がもたらすリスク</div>
+        <div class="alert-text">ステーブルコインや仮想資産の大規模普及は、各国でFATF基準の適用が不均一なままでは不正金融リスクを悪化させる恐れがある。FATF基準への準拠が遅れた国は、グレーリスト掲載等の国際的圧力に直面する可能性がある。</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>発行者への要請</h3>
+        <p>ステーブルコイン発行者（Tether、Circle等）は、AML/CFT義務の主体として明確に位置づけられ、スマートコントラクトレベルでのコンプライアンス対応が求められる。</p>
+      </div>
+      <div class="card">
+        <h3>各国当局への要請</h3>
+        <p>単に規制枠組みを作るだけでなく、ブロックチェーン解析技術の習得と国際的な執行協力体制の構築を早急に進めることが必要。</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer">
+  <p>
+    本ページはFATF公式レポート「<strong>Targeted Report on Stablecoins and Unhosted Wallets</strong>」（2025年）の内容を日本語に翻訳・要約したものです。<br>
+    原文PDF:
+    <a href="https://www.fatf-gafi.org/content/dam/fatf-gafi/publications/targeted-report-on-stablecoins-and-unhosted-wallets.pdf.coredownload.inline.pdf" target="_blank">
+      fatf-gafi.org
+    </a>
+    &nbsp;|&nbsp;
+    参照情報: <a href="https://www.fatf-gafi.org/en/publications/Virtualassets/targeted-report-stablecoins-unhosted-wallets.html" target="_blank">FATF Publication Page</a>
+  </p>
+  <p style="margin-top:8px;">本要約は情報提供目的のみ。投資・法律・規制上のアドバイスを構成するものではありません。</p>
+</div>
+
+</body>
+</html>
